@@ -30,6 +30,10 @@ jobs:
             pm2 save
 
 ----------------------------------------------------------------------------------------
+เพิ่มโค้ดของเราเข้า cloud server 
+เข้า home ในroot cd /home
+git clone "url code ในgithubของเรา"
+
 รวมคำสั่งใน cloud server ของเรา
 1) อัปเดตระบบก่อน
 sudo apt update
