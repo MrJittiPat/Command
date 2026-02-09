@@ -1,0 +1,81 @@
+ไฟล์ .gitignore ไว้สำหรับไฟล์หรือโฟลเดอร์ไหน “ไม่ต้องติดตาม (track)” และ “ไม่ต้องอัปโหลดขึ้น repository
+
+สร้างโฟลเดอร์ .github/workflows/deploy.yml ไว้สำหรับ ci/cd
+ด้านใน deploy.yml 
+
+name: Deploy to server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd /home/ชื่อโฟลเดอร์งานของเรา
+            git pull origin main
+            npm install
+            pm2 restart ชื่อไฟล์สำหรับrunงานของเรา
+            pm2 save
+
+----------------------------------------------------------------------------------------
+รวมคำสั่งใน cloud server ของเรา
+1) อัปเดตระบบก่อน
+sudo apt update
+sudo apt upgrade -y
+
+2) ติดตั้ง Node.js 24
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+sudo apt install -y nodejs
+
+3) ตรวจสอบเวอร์ชัน
+node -v
+npm -v
+
+4) ติดตั้ง PM2 แบบ Global
+sudo npm install -g pm2
+
+5) ตรวจสอบว่าติดตั้งสำเร็จ
+pm2 -v
+
+6) ตั้งให้รันอัตโนมัติหลังรีบูตเครื่อง (สำคัญมาก)
+pm2 startup
+
+7) รันไฟล์ Node
+pm2 start ชื่อไฟล์สำหรับrunงานของเรา
+
+8) ดูสถานะโปรเซส
+pm2 list
+
+---------------------------------------------------------------------------------------
+
+ssh-keygen -t rsa -b 4096 -C "github-actions"
+
+ให้เราอยู่ในหน้า root@ชื่อเรา:~# ls -a แล้วหาว่ามี .ssh ไหม ถ้ามีให้เราใช้คำสั่ง cd .ssh/
+พออยู่ในหน้า root@ขื่อเรา:~/.ssh# ให้ใข่คำสั่ง ls เช็คว่ามี id_ras กับ id_rsa.pub ไหมถ้ามีไปขั้นตอนต่อไปเลย
+
+cat id_rsa.pub  > authorized_keys
+
+cat id_ras ให้คัดลอกคีย์ทั้งหมด
+
+----------------------------------------------------------------------------------------
+ภายใน GitHub ไปที่ setting -> Secrets and variables -> Actions เลือก New repository secret 
+Name KEY
+Secret ใส่คีย์ที่เราได้คัดลอกมา
+สร้างใหม่
+Name USERNAME
+Secret root
+สร้างใหม่
+Name HOST
+Secret ใส่IP public server
