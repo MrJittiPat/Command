@@ -33,6 +33,7 @@ jobs:
 เพิ่มโค้ดของเราเข้า cloud server 
 เข้า home ในroot cd /home
 git clone "url code ในgithubของเรา"
+cd เข้างานของเรา
 
 รวมคำสั่งใน cloud server ของเรา
 1) อัปเดตระบบก่อน
@@ -71,7 +72,7 @@ ssh-keygen -t rsa -b 4096 -C "github-actions"
 
 cat id_rsa.pub  > authorized_keys
 
-cat id_ras ให้คัดลอกคีย์ทั้งหมด
+cat id_rsa ให้คัดลอกคีย์ทั้งหมด
 
 ----------------------------------------------------------------------------------------
 ภายใน GitHub ไปที่ setting -> Secrets and variables -> Actions เลือก New repository secret 
